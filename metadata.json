@@ -1,0 +1,9 @@
+{
+  "name": "SmartClass Timetable",
+  "description": "A minimalist, AI-powered class timetable manager with photo-to-schedule extraction and sharing capabilities.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
