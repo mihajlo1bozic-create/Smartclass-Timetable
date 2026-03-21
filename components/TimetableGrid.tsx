@@ -125,16 +125,16 @@ const TimetableGrid: React.FC<TimetableGridProps> = ({
                       onClick={() => !readOnly && onEditBlock?.(block)}
                     >
                       <div className="flex flex-col h-full relative">
-                        <span className={`text-[10px] sm:text-[11px] font-bold opacity-70 mb-0.5 ${block.type === BlockType.BREAK ? 'text-gray-400 dark:text-zinc-500' : 'text-gray-800'}`}>
+                        <span className={`text-[10px] sm:text-[11px] font-black mb-0.5 ${block.type === BlockType.BREAK ? 'text-gray-600 dark:text-zinc-400' : 'text-zinc-900'}`}>
                           {block.startTime} - {block.endTime}
                         </span>
-                        <h4 className={`text-xs sm:text-xs font-bold truncate leading-tight pr-8 ${block.type === BlockType.BREAK ? 'text-gray-500 dark:text-zinc-400' : 'text-gray-900'}`}>
+                        <h4 className={`text-xs sm:text-xs font-black truncate leading-tight pr-8 ${block.type === BlockType.BREAK ? 'text-gray-700 dark:text-zinc-300' : 'text-black'}`}>
                           {block.type === BlockType.BREAK ? 'Study Break' : block.subject}
                         </h4>
                         {block.room && (
-                          <div className="mt-auto flex items-center gap-1 opacity-80">
+                          <div className={`mt-auto flex items-center gap-1 ${block.type === BlockType.BREAK ? 'text-gray-600 dark:text-zinc-400' : 'text-zinc-800'}`}>
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8,0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span className="text-[9px] sm:text-[10px] font-medium truncate">{block.room}</span>
+                            <span className="text-[9px] sm:text-[10px] font-bold truncate">{block.room}</span>
                           </div>
                         )}
 
