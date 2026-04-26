@@ -117,13 +117,13 @@ const Dashboard: React.FC<{ user: User | null; onLogin: (u: User) => void; onLog
             console.log('Transcript:', transcript);
             if (transcript.includes('hey study partner') || transcript.includes('hej studijin partner') || transcript.includes('partneru')) {
               setIsStudyCopilotOpen(true);
-              setStudyHelpData({ text: 'How can I help you today?', sources: [], subject: 'Voice Activated Help', grade: 100 });
             }
           }
         }
       };
 
       recognition.onerror = (event: any) => {
+        if (event.error === 'no-speech') return;
         console.error('Speech recognition error:', event.error);
         if (event.error === 'not-allowed') {
           setVoiceActivationEnabled(false);
