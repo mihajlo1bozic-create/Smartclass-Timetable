@@ -11,6 +11,8 @@ interface ProSettingsModalProps {
   setNotificationsEnabled: (enabled: boolean) => void;
   lowGradeAlerts: boolean;
   setLowGradeAlerts: (enabled: boolean) => void;
+  voiceActivationEnabled: boolean;
+  setVoiceActivationEnabled: (enabled: boolean) => void;
   onStartAIStudy: () => void;
   onOpenNoteMaker: () => void;
   onOpenBookPro: () => void;
@@ -25,6 +27,8 @@ const ProSettingsModal: React.FC<ProSettingsModalProps> = ({
   setNotificationsEnabled,
   lowGradeAlerts,
   setLowGradeAlerts,
+  voiceActivationEnabled,
+  setVoiceActivationEnabled,
   onStartAIStudy,
   onOpenNoteMaker,
   onOpenBookPro,
@@ -197,6 +201,29 @@ const ProSettingsModal: React.FC<ProSettingsModalProps> = ({
                 </div>
               </div>
 
+              <div className="relative group overflow-hidden p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-3xl border border-blue-100 dark:border-blue-900/50 mb-2">
+                <div className="flex items-center justify-between relative z-10">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                    </div>
+                    <div>
+                      <p className="font-black text-gray-900 dark:text-white">AI Book Pro</p>
+                      <p className="text-xs text-gray-500 dark:text-zinc-400">Deep research on any literary work</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => { onClose(); onOpenBookPro(); }}
+                    className="px-6 py-2.5 bg-blue-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md active:scale-95"
+                  >
+                    Launch Pro
+                  </button>
+                </div>
+                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <svg className="w-20 h-20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                </div>
+              </div>
+
               <div className="flex items-center justify-between p-6 bg-gray-50 dark:bg-zinc-800/50 rounded-3xl border border-gray-100 dark:border-zinc-800 transition-colors">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center">
@@ -252,6 +279,24 @@ const ProSettingsModal: React.FC<ProSettingsModalProps> = ({
                   className={`w-14 h-8 rounded-full relative transition-all duration-300 ${isDarkMode ? 'bg-indigo-600' : 'bg-amber-400'}`}
                 >
                   <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all duration-300 shadow-md ${isDarkMode ? 'left-7' : 'left-1'}`} />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between p-6 bg-indigo-50 dark:bg-indigo-950/20 rounded-3xl border border-indigo-100 dark:border-indigo-900 transition-colors shadow-sm">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                  </div>
+                  <div>
+                    <p className="font-black text-gray-900 dark:text-white">Voice Activation</p>
+                    <p className="text-xs text-gray-500 dark:text-zinc-400 uppercase tracking-widest">Respond to "Hey Study Partner"</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setVoiceActivationEnabled(!voiceActivationEnabled)}
+                  className={`w-14 h-8 rounded-full relative transition-all duration-300 ${voiceActivationEnabled ? 'bg-green-500' : 'bg-gray-200 dark:bg-zinc-700'}`}
+                >
+                  <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all duration-300 shadow-md ${voiceActivationEnabled ? 'left-7' : 'left-1'}`} />
                 </button>
               </div>
             </>

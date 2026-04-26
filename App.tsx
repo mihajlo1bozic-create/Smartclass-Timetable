@@ -82,6 +82,7 @@ const Dashboard: React.FC<{ user: User | null; onLogin: (u: User) => void; onLog
   const [isStudyCopilotOpen, setIsStudyCopilotOpen] = useState(false);
   const [isNoteMakerOpen, setIsNoteMakerOpen] = useState(false);
   const [isBookProOpen, setIsBookProOpen] = useState(false);
+  const [voiceActivationEnabled, setVoiceActivationEnabled] = useState(() => localStorage.getItem('voiceActivation') === 'true');
   
   const [editingBlock, setEditingBlock] = useState<ScheduleBlock | null>(null);
   const [editingExam, setEditingExam] = useState<Exam | null>(null);
@@ -98,6 +99,56 @@ const Dashboard: React.FC<{ user: User | null; onLogin: (u: User) => void; onLog
 
   const [studyHelpData, setStudyHelpData] = useState<{ text: string; sources: any[]; subject: string; grade: number } | null>(null);
   const [isStudyHelpLoading, setIsStudyHelpLoading] = useState(false);
+
+  useEffect(() => {
+    let recognition: any = null;
+    
+    if (voiceActivationEnabled && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = timetable.language === Language.SERBIAN_LATIN ? 'sr-RS' : 'en-US';
+
+      recognition.onresult = (event: any) => {
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            const transcript = event.results[i][0].transcript.toLowerCase();
+            console.log('Transcript:', transcript);
+            if (transcript.includes('hey study partner') || transcript.includes('hej studijin partner') || transcript.includes('partneru')) {
+              setIsStudyCopilotOpen(true);
+              setStudyHelpData({ text: 'How can I help you today?', sources: [], subject: 'Voice Activated Help', grade: 100 });
+            }
+          }
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        if (event.error === 'not-allowed') {
+          setVoiceActivationEnabled(false);
+          localStorage.setItem('voiceActivation', 'false');
+        }
+      };
+
+      recognition.onend = () => {
+        if (voiceActivationEnabled) recognition.start();
+      };
+
+      try {
+        recognition.start();
+      } catch (e) {
+        console.error('Recognition start error:', e);
+      }
+    }
+
+    return () => {
+      if (recognition) {
+        recognition.onend = null;
+        recognition.stop();
+      }
+    };
+  }, [voiceActivationEnabled, timetable.language]);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -342,7 +393,24 @@ const Dashboard: React.FC<{ user: User | null; onLogin: (u: User) => void; onLog
       <BlockModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveBlock} onDelete={(id) => setTimetable(p => ({ ...p, blocks: p.blocks.filter(b => b.id !== id) }))} initialData={editingBlock} />
       <AIUploadModal isOpen={isAIModalOpen} onClose={() => setIsAIModalOpen(false)} onConfirm={handleImportBlocks} />
       <PrinterModal isOpen={isPrinterModalOpen} onClose={() => setIsPrinterModalOpen(false)} onConfirmPrint={() => window.print()} timetable={timetable} />
-      <ProSettingsModal isOpen={isProSettingsOpen} onClose={() => setIsProSettingsOpen(false)} isDarkMode={isDarkMode} toggleTheme={() => setIsDarkMode(!isDarkMode)} notificationsEnabled={notificationsEnabled} setNotificationsEnabled={setNotificationsEnabled} lowGradeAlerts={lowGradeAlerts} setLowGradeAlerts={setLowGradeAlerts} onStartAIStudy={handleStartGlobalStudyPlan} onOpenNoteMaker={() => setIsNoteMakerOpen(true)} onOpenBookPro={() => setIsBookProOpen(true)} />
+      <ProSettingsModal 
+        isOpen={isProSettingsOpen} 
+        onClose={() => setIsProSettingsOpen(false)} 
+        isDarkMode={isDarkMode} 
+        toggleTheme={() => setIsDarkMode(!isDarkMode)} 
+        notificationsEnabled={notificationsEnabled} 
+        setNotificationsEnabled={setNotificationsEnabled} 
+        lowGradeAlerts={lowGradeAlerts} 
+        setLowGradeAlerts={setLowGradeAlerts} 
+        voiceActivationEnabled={voiceActivationEnabled}
+        setVoiceActivationEnabled={(v) => {
+          setVoiceActivationEnabled(v);
+          localStorage.setItem('voiceActivation', v ? 'true' : 'false');
+        }}
+        onStartAIStudy={handleStartGlobalStudyPlan} 
+        onOpenNoteMaker={() => setIsNoteMakerOpen(true)} 
+        onOpenBookPro={() => setIsBookProOpen(true)} 
+      />
       <DonationModal isOpen={isDonationModalOpen} onClose={() => setIsDonationModalOpen(false)} />
       <ExamModal isOpen={isExamModalOpen} onClose={() => setIsExamModalOpen(false)} onSave={(e) => setTimetable(p => ({ ...p, exams: e.id ? p.exams.map(ex => ex.id === e.id ? e : ex) : [...p.exams, { ...e, id: Math.random().toString(36).substr(2, 9) }] }))} onDelete={(id) => setTimetable(p => ({ ...p, exams: p.exams.filter(ex => ex.id !== id) }))} initialData={editingExam} />
       <GradeModal isOpen={isGradeModalOpen} onClose={() => setIsGradeModalOpen(false)} onSave={(g) => setTimetable(p => ({ ...p, grades: g.id ? p.grades.map(gr => gr.id === g.id ? g : gr) : [...p.grades, { ...g, id: Math.random().toString(36).substr(2, 9) }] }))} onDelete={(id) => setTimetable(p => ({ ...p, grades: p.grades.filter(gr => gr.id !== id) }))} initialData={editingGrade} subjects={Array.from(new Set(timetable.blocks.map(b => b.subject || '').filter(Boolean)))} />
